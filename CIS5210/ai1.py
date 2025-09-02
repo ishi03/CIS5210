@@ -50,6 +50,8 @@ def concatenate(seqs):
 
 
 def transpose(matrix):
+    if not matrix:
+        return []
     return [[row[i] for row in matrix] for i in range(len(matrix[0]))]
 
 ############################################################
@@ -116,7 +118,7 @@ def digits_to_words(text):
             "8": "eight",
             "9": "nine",
             }
-    return " ".join([hashmap[t] for t in text if t in hashmap.keys()])
+    return " ".join([hashmap[t] for t in text if t in hashmap])
 
 
 def to_mixed_case(name):
@@ -159,7 +161,7 @@ class Polynomial(object):
     def __mul__(self, other):
         result = []
         for x in self._polynomial:
-            for y in other:
+            for y in other.get_polynomial():
                 result.append((x[0] * y[0], x[1] + y[1]))
         return Polynomial(result)
 
@@ -176,35 +178,37 @@ class Polynomial(object):
             else:
                 hashmap[x[1]] = x[0]
 
-        return Polynomial([(x, hashmap[x]) for x in hashmap.keys()])
+        return Polynomial([(hashmap[x], x) for x in hashmap.keys()])
 
 
     def __str__(self):
         result = ""
         poly = self._polynomial
-        if poly[1][0] < 0:
+        if len(poly) >= 1 and poly[0][0] < 0:
             result += "-"
         for i in range(len(poly)):
             term = ""
+            coeff = poly[i][0]
+            power = poly[i][1]
             # add a sign
             if i != 0:
-                if poly[i][0] < 0:
+                if coeff < 0:
                     term += " - "
                 else:
                     term += " + "
             # add coeff
-            if poly[i][0] != 1:
-                if poly[i][1] > 0:
-                    term += str(abs(poly[i][0]))
-                else:
-                    term += "x"
+            if coeff != 1:
+                term += str(abs(coeff))
+            elif power == 0:
+                term += "1"
+
             # add variable
-            if poly[i][1] != 0:
-                if poly[i][1] == 1:
+            if power != 0:
+                if power == 1:
                     term += "x"
                 else:
                     term += "x^"
-                    term += str(poly[i][1])
+                    term += str(power)
             result += term
         return result
 
@@ -220,6 +224,9 @@ def sort_array(list_of_matrices):
     return np.sort(flatlist)
 
 def POS_tag(sentence):
+    nltk.download('stopwords')
+    nltk.download('punkt')
+    nltk.download('averaged_perceptron_tagger')
     tokens = nltk.word_tokenize(sentence.lower())
     stopwords = nltk.corpus.stopwords.words('english')
     tokens2 = [word for word in tokens if word not in stopwords]
