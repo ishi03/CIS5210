@@ -8,6 +8,10 @@
 import numpy as np
 import nltk
 from nltk.tag.perceptron import PerceptronTagger
+
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
 ############################################################
 student_name = "Ishita Rai"
 # This is where your grade report will be sent.
@@ -50,8 +54,6 @@ def concatenate(seqs):
 
 
 def transpose(matrix):
-    if not matrix:
-        return []
     return [[row[i] for row in matrix] for i in range(len(matrix[0]))]
 
 ############################################################
@@ -224,9 +226,6 @@ def sort_array(list_of_matrices):
     return np.sort(flatlist)
 
 def POS_tag(sentence):
-    nltk.download('stopwords')
-    nltk.download('punkt')
-    nltk.download('averaged_perceptron_tagger')
     tokens = nltk.word_tokenize(sentence.lower())
     stopwords = nltk.corpus.stopwords.words('english')
     tokens2 = [word for word in tokens if word not in stopwords]
